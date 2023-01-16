@@ -18,7 +18,7 @@ exports.handler = async (event, context) => {
 			console.log(holidays)
 			return {
 				statusCode: 200,
-				headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
+				headers: {'Content-Type': 'application/json' },
 				body: JSON.stringify(holidays)
 			}
 
@@ -38,43 +38,6 @@ exports.handler = async (event, context) => {
 
 		}
 	}
-
-	/*
-	const pathname = event.queryStringParameters.cors;
-	if (event.httpMethod == 'GET') {
-		if (pathname == "holidays") {
-			return get('https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv').then(res => {
-				const now = new Date();
-				const today = new Date(`${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`).getTime();
-				let holidays = iconv.decode(res.contents, "Shift_JIS").split('\r\n').slice(1).map(value => value.split(',')).filter(value => new Date(value[0]).getTime() >= today);
-				return {
-					statusCode: 200,
-					headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
-					body: JSON.stringify(holidays)
-				}
-			}).catch(error => {
-				console.log(error)
-				return {
-					statusCode: 422,
-					body: `Error: ${error}`,
-				}
-			})
-		} else {
-			return get(pathname).then(res => {
-				return {
-					statusCode: 200,
-					headers: res.headers,
-					body: res.contents.toString()
-				}
-			}).catch(error => {
-				console.log(error)
-				return {
-					statusCode: 422,
-					body: `Error: ${error}`,
-				}
-			});
-		}
-	}*/
 }
 
 function get(pathname) {
