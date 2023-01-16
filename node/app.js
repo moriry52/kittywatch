@@ -2,10 +2,12 @@ const https = require('https');
 const iconv = require("iconv-lite");
 
 exports.handler = async (event, context) => {
-	return{
+	return (() => {
+		return {
 			statusCode: 200,
 			body: 'Hello world'
 		}
+	})();
 	/*
 	const pathname = event.queryStringParameters.cors;
 	if (event.httpMethod == 'GET') {
