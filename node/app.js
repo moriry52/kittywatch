@@ -2,7 +2,7 @@ const https = require('https');
 const iconv = require("iconv-lite");
 
 exports.handler = async (event, context) => {
-	return (() => {
+	return () => {
 		const pathname = event.queryStringParameters.cors;
 		if (event.httpMethod == 'GET') {
 			if (pathname == "holidays") {
@@ -38,7 +38,7 @@ exports.handler = async (event, context) => {
 				});
 			}
 		}
-	})();
+	};
 	/*
 	const pathname = event.queryStringParameters.cors;
 	if (event.httpMethod == 'GET') {
