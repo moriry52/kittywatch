@@ -15,6 +15,7 @@ exports.handler = async (event, context) => {
 			const now = new Date();
 			const today = new Date(`${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`).getTime();
 			let holidays = iconv.decode(res.contents, "Shift_JIS").split('\r\n').slice(1).map(value => value.split(',')).filter(value => new Date(value[0]).getTime() >= today);
+			console.log(holidays)
 			return {
 				statusCode: 200,
 				headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
