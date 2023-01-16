@@ -7,7 +7,7 @@ exports.handler = async (event, context) => {
 			statusCode: 200,
 			body: 'Hello world'
 		}
-	}
+	}/*
 	const pathname = event.queryStringParameters.cors;
 	if (event.httpMethod == 'GET') {
 		if (pathname == "holidays") {
@@ -42,7 +42,7 @@ exports.handler = async (event, context) => {
 				}
 			});
 		}
-	}
+	}*/
 }
 
 function get(pathname) {
