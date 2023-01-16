@@ -1,0 +1,910 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=400,user-scalable=no">
+    <meta name=”robots” content=”noindex”>
+
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+    <link rel="manifest" href="/site.webmanifest">
+    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5">
+    <meta name="msapplication-TileColor" content="#da532c">
+    <meta name="theme-color" content="#ffffff">
+
+    <title>時計と天気</title>
+
+
+
+    <style type="text/css">
+        <!--
+        body {
+            font-family: sans-serif;
+        }
+
+        #loader {
+            z-index: 50000;
+        }
+
+        .loader {
+            position: relative;
+            font-size: 5px;
+            width: 5em;
+            height: 5em;
+            border-radius: 50%;
+            border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+            border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+            border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+            border-left: 1.1em solid #ffffff;
+            -webkit-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-animation: load8 1.1s infinite linear;
+            animation: load8 1.1s infinite linear;
+        }
+
+        @-webkit-keyframes load8 {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        @keyframes load8 {
+            0% {
+                -webkit-transform: rotate(0deg);
+                transform: rotate(0deg);
+            }
+
+            100% {
+                -webkit-transform: rotate(360deg);
+                transform: rotate(360deg);
+            }
+        }
+
+        #loader {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            justify-content: center;
+            align-items: center;
+            display: none;
+
+        }
+
+        #wallpaper {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: black;
+        }
+
+        #wallpaper_img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0.7;
+        }
+
+        #items {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow-y: auto;
+            overflow-x: hidden;
+        }
+
+        #items>div {
+            position: relative;
+            color: white;
+
+        }
+
+        #watch {
+            text-align: center;
+        }
+
+        #watch_time {
+            font-size: 150px;
+            font-weight: bold;
+            margin: 100px 0 0;
+        }
+
+        #watch_date {
+            font-size: 100px;
+            font-weight: bold;
+        }
+
+        #today_weather {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #today_weather img {
+            width: 300px;
+        }
+
+
+        #today_weather>div>div {
+            width: 300px;
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        #two_days_weather {
+            width: 100%;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            margin: 5px;
+        }
+
+        #two_days_weather>div {
+            margin: 0 0 0 50px;
+        }
+
+        #two_days_weather img {
+            width: 200px;
+        }
+
+        #two_days_weather>div>div>div {
+            width: 150px;
+            font-size: 20px;
+        }
+
+        #two_days_weather>div>div {
+            font-size: 30px;
+            font-weight: bold;
+        }
+
+        #weekly_weather {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #weekly_weather>div {
+            width: 95%;
+            display: flex;
+            justify-content: space-around;
+            flex-wrap: wrap;
+            text-align: center;
+        }
+
+        #weekly_weather>div>div {
+            width: 13%;
+        }
+
+        #weekly_weather>div>div>div:first-child {
+            font-size: 25px;
+            font-weight: bold;
+        }
+
+
+
+
+        #news {
+            width: 100%;
+            display: flex;
+            justify-content: center;
+        }
+
+        #news>div {
+            width: 90%;
+        }
+
+        #news>div>div {
+            margin: 20px;
+            padding: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        #news a {
+            text-decoration: none;
+            color: white;
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        #news a:hover {
+            color: #26a69a;
+        }
+
+
+        #dialog {
+            display: none;
+        }
+
+        #dialog {
+            display: none;
+        }
+
+        .menu-btn {
+            position: fixed;
+            top: 0px;
+            left: 0px;
+            display: flex;
+            height: 50px;
+            width: 50px;
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            background-color: rgba(0, 0, 0, 0.3);
+        }
+
+        .menu-btn span,
+        .menu-btn span:before,
+        .menu-btn span:after {
+            content: '';
+            display: block;
+            height: 3px;
+            width: 25px;
+            border-radius: 3px;
+            background-color: rgba(255, 255, 255, 0.3);
+            position: absolute;
+        }
+
+        .menu-btn span:before {
+            bottom: 8px;
+        }
+
+        .menu-btn span:after {
+            top: 8px;
+        }
+
+
+        #menu-btn-check:checked~.menu-btn span {
+            background-color: rgba(255, 255, 255, 0);
+            /*メニューオープン時は真ん中の線を透明にする*/
+        }
+
+        #menu-btn-check:checked~.menu-btn span::before {
+            bottom: 0;
+            transform: rotate(45deg);
+        }
+
+        #menu-btn-check:checked~.menu-btn span::after {
+            top: 0;
+            transform: rotate(-45deg);
+        }
+
+        #menu-btn-check:checked~.menu-content {
+            left: 0;
+            /*メニューを画面内へ*/
+        }
+
+        #menu-btn-check {
+            display: none;
+        }
+
+        .menu-content {
+            width: 130px;
+            height: 100%;
+            position: fixed;
+            top: 0;
+            left: -130px;
+            background-color: rgba(0, 0, 0, 0.3);
+            transition: all 0.2s;
+
+        }
+
+        .menu-content ul {
+            padding: 70px 10px 0;
+        }
+
+        .menu-content ul li {
+            list-style: none;
+        }
+
+        .menu-content ul li a {
+            display: block;
+            width: 100%;
+            font-size: 15px;
+            box-sizing: border-box;
+            color: #ffffff;
+            text-decoration: none;
+            padding: 9px 15px 10px 0;
+            position: relative;
+        }
+
+        .menu-content ul li a:hover {
+            color: rgb(13, 71, 161);
+            border-color: rgb(13, 71, 161);
+        }
+
+        @media screen and (max-width:600px) {
+            #watch_time {
+                font-size: 80px;
+                margin: 20px 0 0;
+            }
+
+            #watch_date {
+                font-size: 45px;
+            }
+
+            #today_weather img {
+                width: 190px;
+            }
+
+            #today_weather>div>div {
+                width: 190px;
+                font-size: 20px;
+            }
+
+            #two_days_weather>div {
+                margin: 0 0 0 20px;
+            }
+
+            #two_days_weather img {
+                width: 80px;
+            }
+
+            #two_days_weather>div>div>div {
+                width: 80px;
+                font-size: 12px;
+            }
+
+            #two_days_weather>div>div {
+                font-size: 20px;
+            }
+
+            #weekly_weather>div>div>div:first-child {
+                font-size: 12px;
+                font-weight: bold;
+            }
+
+            #weekly_weather>div>div>div:nth-child(3) {
+                height: 50px;
+                display: table;
+                width:100%;
+                text-align: center;
+            }
+
+            #weekly_weather>div>div>div:nth-child(3) div {
+                display: table-cell;
+                vertical-align: middle;
+            }
+
+            #news>div {
+                width: 100%;
+            }
+
+        }
+        -->
+    </style>
+</head>
+
+<body style='margin:0;padding:0;'>
+
+
+    <div id="wallpaper">
+        <img id="wallpaper_img" />
+    </div>
+
+    <div id="items">
+        <div id="watch">
+            <div id="watch_time"></div>
+            <div id="watch_date"></div>
+        </div>
+        <div id="weather">
+            <div id="today_weather"></div>
+            <div id="two_days_weather"></div>
+            <div id="weekly_weather"></div>
+        </div>
+        <div id="news"></div>
+    </div>
+
+    <div>
+        <input type="checkbox" id="menu-btn-check">
+        <label for="menu-btn-check" class="menu-btn"><span></span></label>
+        <div class="menu-content">
+            <ul>
+                <li><a onclick="changeWallpaper()">壁紙変更</a></li>
+                <li><a onclick="changeRegion()">地域変更</a></li>
+                <li><a onclick="changeRss()">ニュース変更</a></li>
+                <li><a onclick="initialSetting()">設定初期化</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <div id="dialog"></div>
+    <div id='loader'>
+        <div class='loader'></div>
+    </div>
+
+    <script src="weatherCodeTable.js"></script>
+    <script type="text/javascript">
+
+        const kittyWatch = JSON.parse(localStorage.getItem('kittyWatch')) || {};
+        var prefecture = kittyWatch.prefecture || 210000;
+        var region = kittyWatch.region || 0;
+        var rss = kittyWatch.rss || 'https://www.nhk.or.jp/rss/news/cat0.xml';
+        var keys = kittyWatch.keys || { keyword: 'kitty', pages: 2 };
+
+        var holidayList = [];
+
+        const SetWeather = setWeather();
+        const SetWallpaper = setWallpaper();
+        const SetNews = setNews();
+
+        const events = [SetWallpaper, SetNews];
+        events.forEach(event => {
+            event();
+            setInterval(event, 1000);
+        });
+
+        const calenderEvents = [setWatch(), SetWeather];
+        getHolidayList().then(e => {
+            calenderEvents.forEach(event => {
+                event();
+                setInterval(event, 1000);
+            });
+        });
+
+        setInterval(location.reload, 24 * 60 * 60 * 1000);
+
+        function save() {
+            localStorage.setItem('kittyWatch', JSON.stringify({ prefecture: prefecture, region: region, rss: rss, keys: keys }));
+        }
+
+
+        function getHolidayList() {
+            return new Promise((resolve, reject) => {
+                fetch('https://kittywatch.netlify.app/.netlify/functions/app?cors=holidays').then(response => {
+                    return response.text();
+                }).then(text => {
+                    holidayList = JSON.parse(text);
+                    resolve();
+                })
+            })
+        }
+
+        function getDateString(date) {
+            const days = ['(日)', '(月)', '(火)', '(水)', '(木)', '(金)', '(土)'];
+            const y = date.getFullYear();
+            const m = date.getMonth() + 1;
+            const d = date.getDate();
+            const day = date.getDay();
+            let color = 'white';
+            let holidayName = '';
+            const holiday = holidayList.find(value => value[0] == `${y}/${m}/${d}`);
+            if (holiday) {
+                color = 'red';
+                holidayName = `<br><span style="color:red">${holiday[1]}</span>`;
+            } else if (day == 0) {
+                color = 'red';
+            } else if (day == 6) {
+                color = 'blue';
+            }
+            return [`<span style='color:${color}'>${y}/</span>`, `<span style='color:${color}'>${m}/${d}</span>`,`<span style='color:${color}'>${days[day]}</span>`,`<span color='${color}'>${holidayName}</span>`];
+        }
+
+        function changeRegion() {
+            document.getElementById('menu-btn-check').checked = false;
+            let prefectureSelection = prefecture;
+            let regionSelection = region;
+            const dialog = new Dialog('dialog', 350, 100, '地域選択');
+            const div = document.createElement('div');
+            const prefectureSelect = document.createElement('select');
+            const regionSelect = document.createElement('select');
+            regionCodes.forEach(regionCode => {
+                const option = document.createElement('option');
+                option.innerHTML = regionCode[1];
+                option.selected = regionCode[0] == prefectureSelection;
+                prefectureSelect.appendChild(option);
+            });
+            prefectureSelect.onchange = event => {
+                div.innerHTML = '';
+                div.appendChild(prefectureSelect);
+                prefectureSelection = regionCodes.filter(value => value[1] == event.currentTarget.value)[0][0];
+                regionSelection = 0;
+                setRegions(prefectureSelection, regionSelection);
+
+            }
+            div.appendChild(prefectureSelect);
+            setRegions(prefectureSelection, regionSelection);
+            dialog.on(div, ['OK'], ['Cancel'], text => {
+                dialog.off();
+                if (text == 'OK') {
+                    prefecture = prefectureSelection;
+                    region = regionCodes.filter(value => value[0] == prefecture)[0][2].map(value => value[1]).indexOf(regionSelect.value)
+                    save();
+                    SetWeather(true);
+                }
+            })
+
+            function setRegions(prefectureCode, regionSelected) {
+                regionSelect.innerHTML = '';
+                regionCodes.filter(regionCode => regionCode[0] == prefectureCode)[0][2].forEach((childrenCode, i) => {
+                    const option = document.createElement('option');
+                    option.innerHTML = childrenCode[1];
+                    option.selected = i == regionSelected;
+                    regionSelect.appendChild(option);
+                })
+                div.appendChild(regionSelect);
+            }
+        }
+
+        function setNews() {
+            const interval = 60 * 60 * 1000;
+            let previousTime = Math.floor(new Date().getTime() / interval) * interval - interval - 1;
+            return (refresh) => {
+                if (!refresh && new Date().getTime() - previousTime < interval) {
+                    return;
+                }
+                previousTime = Math.floor(new Date().getTime() / interval) * interval;
+
+                document.getElementById('news').innerHTML = "";
+                fetch(`https://kittywatch.netlify.app/.netlify/functions/app?cors=${encodeURI(rss)}`).then(response => {
+                    if (!response.ok) {
+                        throw new Error();
+                    }
+                    return response.text()
+                }).then((xml) => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(xml, "text/xml");
+                    let rss = doc.documentElement.getElementsByTagName("item");
+                    const div = document.createElement('div');
+
+                    for (let i = 0; i < rss.length; i++) {
+                        let newsDiv = document.createElement('div');
+                        let rssTitle = rss[i].getElementsByTagName("title")[0].textContent;
+                        let rssLink = rss[i].getElementsByTagName("link")[0].textContent;
+                        let rssDescription = rss[i].getElementsByTagName("description")[0].textContent;
+                        const tagString = `<a href="${rssLink}">${rssTitle}</a><br>${rssDescription}`;
+                        newsDiv.innerHTML = tagString;
+                        div.appendChild(newsDiv);
+                    }
+                    document.getElementById('news').appendChild(div)
+                })
+            }
+        }
+
+        function setWeather() {
+            const interval = 60 * 60 * 1000;
+            let previousTime = Math.floor(new Date().getTime() / interval) * interval - interval - 1;
+            return (refresh) => {
+                if (!refresh && new Date().getTime() - previousTime < interval) {
+                    return;
+                }
+                previousTime = Math.floor(new Date().getTime() / interval) * interval;
+
+                fetch(`https://www.jma.go.jp/bosai/forecast/data/forecast/${prefecture}.json`).then(response => {
+                    if (!response.ok) {
+                        throw new Error();
+                    }
+                    return response.json()
+                }).then((weather) => {
+                    const todayTime = Math.floor(new Date().getTime() / (24 * 60 * 60 * 1000))*(24 * 60 * 60 * 1000);
+                    let timeDefines = weather[0].timeSeries[0].timeDefines;
+                    let weatherCodes = weather[0].timeSeries[0].areas[region].weatherCodes.filter((value,i) => new Date(timeDefines[i]) >= todayTime);
+                    let weatherComments = weather[0].timeSeries[0].areas[region].weathers.filter((value,i) => new Date(timeDefines[i]) >= todayTime);
+                    timeDefines = timeDefines.filter(value => new Date(value).getTime() >= todayTime);
+ 
+                    let rainTimeDefines = weather[0].timeSeries[1].timeDefines;
+                    let rainPops = weather[0].timeSeries[1].areas[region].pops.filter((value,i) => new Date(rainTimeDefines[i]) >= todayTime);
+                    rainPops = ["-", "-", "-", "-"].concat(weather[0].timeSeries[1].areas[region].pops).slice(-8);
+                    const pops = [`<br>降水確率 ${rainPops.slice(0, 4).join('/')}`, `<br>降水確率 ${rainPops.slice(4, 8).join('/')}`, ''];
+
+                    let tempTimeDefines = weather[0].timeSeries[2].timeDefines;
+                    const temps = weather[0].timeSeries[2].areas[region].temps.filter((value,i) => new Date(tempTimeDefines[i]) >= todayTime);
+                    const tempTimes = tempTimeDefines.filter(value => new Date(value).getTime() >= todayTime).map(value => new Date(value).getHours());
+
+                    let tempComments = [];
+                    if (temps.length == 4 & tempTimes[0] < tempTimes[1]) {
+                        tempComments = [`&nbsp;${temps[0]}℃&nbsp;/&nbsp;${temps[1]}℃&nbsp;`, `&nbsp;${temps[2]}℃&nbsp;/&nbsp;${temps[3]}℃&nbsp;`, ""];
+                    } else if (temps.length == 4 & tempTimes[0] > tempTimes[1]) {
+                        tempComments = [`&nbsp;-&nbsp;/&nbsp;${temps[1]}℃&nbsp;`, `&nbsp;${temps[2]}℃&nbsp;/&nbsp;${temps[3]}℃&nbsp;`, ""];
+                    } else {
+                        tempComments = [`&nbsp;-&nbsp;/&nbsp;-&nbsp;`, `&nbsp;${temps[temps.length - 2]}℃&nbsp;/&nbsp;${temps[temps.length - 1]}℃&nbsp;`, ""];
+                    }
+
+                    document.getElementById('today_weather').innerHTML = '';
+                    document.getElementById('two_days_weather').innerHTML = '';
+                    document.getElementById('today_weather').appendChild(getWeatherDiv(weatherCodes[0], `${weatherComments[0]}${pops[0]}<br>気温 ${tempComments[0]}`));
+
+                    weatherCodes.slice(1).forEach((weatherCode, i) => {
+                        const weatherDiv = document.createElement('div');
+                        const date = new Date(timeDefines[i + 1]);
+                        const tomorrowDiv = document.createElement('div');
+                        tomorrowDiv.innerHTML = getDateString(date).join('');
+                        setStyles(tomorrowDiv, { textAlign: 'center' })
+                        weatherDiv.appendChild(tomorrowDiv);
+                        weatherDiv.appendChild(getWeatherDiv(weatherCode, `${weatherComments[i + 1]}${pops[i + 1]}${tempComments[i + 1] != "" ? `<br>気温 ${tempComments[i + 1]}` : ''}`));
+                        document.getElementById('two_days_weather').appendChild(weatherDiv)
+                    });
+
+                    const weeklyWeatherCodes = weather[1].timeSeries[0].areas[region].weatherCodes;
+                    const weeklytimeDefines = weather[1].timeSeries[0].timeDefines;
+                    const weeklyTempsMax = weather[1].timeSeries[1].areas[region].tempsMax;
+                    const weeklyTempsMin = weather[1].timeSeries[1].areas[region].tempsMin;
+                    const weeklyRainPops = ["", "", "", ""].concat(weather[1].timeSeries[0].areas[region].pops).slice(-weeklytimeDefines.length);
+
+                    document.getElementById('weekly_weather').innerHTML = '';
+                    const wrap = document.createElement('div');
+                    for (let i = 0; i < weeklyWeatherCodes.length; i++) {
+                        const div = document.createElement('div');
+                        const date = new Date(weeklytimeDefines[i]);
+                        const dateDiv = document.createElement('div');
+                        dateDiv.innerHTML = getDateString(date).slice(1,3).join('<br>');
+                        div.appendChild(dateDiv);
+                        const img = document.createElement('img');
+                        img.src = `https://www.jma.go.jp/bosai/forecast/img/${weatherCodeTable[weeklyWeatherCodes[i]][0]}`;
+                        setStyles(img, { width: '100%' });
+                        div.appendChild(img);
+                        const commentDiv = document.createElement('div');
+                        commentDiv.innerHTML = `<div>${weatherCodeTable[weeklyWeatherCodes[i]][3]}</div>`;
+                        div.appendChild(commentDiv);
+                        const tempDiv = document.createElement('div');
+                        let popTemp = `${weeklyRainPops[i]}%<br>${weeklyTempsMin[i]}℃/${weeklyTempsMax[i]}℃`;
+                        if (timeDefines.map(time => new Date(time).getDate()).indexOf(new Date(weeklytimeDefines[i]).getDate()) > -1) {
+                            popTemp = '';
+                        }
+                        tempDiv.innerHTML = popTemp;
+                        setStyles(tempDiv, { fontSize: '10px' })
+                        div.appendChild(tempDiv);
+                        wrap.appendChild(div);
+                    }
+                    document.getElementById('weekly_weather').appendChild(wrap);
+
+                    function getWeatherDiv(weatherCode, comment) {
+                        const div = document.createElement('div');
+                        setStyles(div, { display: 'flex', justifyContent: 'center', alignItems: 'center', height: '80%' });
+                        const img = document.createElement('img');
+                        img.style.diplay = 'block';
+                        img.src = `https://www.jma.go.jp/bosai/forecast/img/${weatherCodeTable[weatherCode][0]}`;
+                        const weatherDiv = document.createElement('div');
+                        weatherDiv.innerHTML = `${comment.replace(/　/g, ' ')}`;
+                        div.appendChild(img);
+                        div.appendChild(weatherDiv);
+                        return div;
+                    }
+                }).catch(err => {
+                    console.log(err);
+                })
+            }
+        }
+
+        function setWatch() {
+            const interval = 1 * 1000;
+            let previousTime = Math.floor(new Date().getTime() / interval) * interval - interval - 1;
+            return () => {
+                if (new Date().getTime() - previousTime < interval) {
+                    return;
+                }
+                previousTime = Math.floor(new Date().getTime() / interval) * interval;
+
+                const date = new Date();
+                document.getElementById('watch_time').innerHTML = `${('0' + date.getHours()).slice(-2)}:${('0' + date.getMinutes()).slice(-2)}:${('0' + date.getSeconds()).slice(-2)}`;
+                document.getElementById('watch_date').innerHTML = getDateString(date).join('');
+            }
+        }
+
+        function setWallpaper() {
+            const interval = 10 * 60 * 1000;
+            let previousTime = Math.floor(new Date().getTime() / interval) * interval - interval - 1;
+            return (refresh) => {
+                if (!refresh && new Date().getTime() - previousTime < interval) {
+                    return;
+                }
+                previousTime = Math.floor(new Date().getTime() / interval) * interval;
+                let p = Math.floor(Math.random() * keys.pages) + 1
+                fetch('https://pixabay.com/api/?key=21981336-c9f2fac838412fc3634a38dd2&q=' + encodeURIComponent(keys.keyword) + '&per_page=200&image_type=photo&category=animals&page=' + encodeURIComponent(p)).then(response => {
+                    if (!response.ok) {
+                        throw new Error();
+                    }
+                    return response.json()
+                }).then((json) => {
+                    let r = Math.floor(Math.random() * json.hits.length);
+                    document.getElementById('wallpaper_img').src = json.hits[r].largeImageURL;
+
+                }).catch(err => {
+                    console.log(err);
+                })
+            }
+
+        }
+
+        function changeWallpaper() {
+            document.getElementById('menu-btn-check').checked = false;
+            const dialog = new Dialog('dialog', 350, 120, '壁紙キーワード');
+            const div = document.createElement('div');
+            const input = document.createElement('input');
+            div.appendChild(input);
+            const resultDiv = document.createElement('div');
+            setStyles(resultDiv, { height: '20px' })
+            div.appendChild(resultDiv);
+            dialog.on(div, ['OK'], ['Cancel'], text => {
+                if (text == 'OK') {
+                    document.getElementById('loader').style.display = 'flex';
+                    fetch('https://pixabay.com/api/?key=21981336-c9f2fac838412fc3634a38dd2&q=' + encodeURIComponent(input.value) + '&per_page=200&image_type=photo&category=animals').then(response => {
+                        if (!response.ok) {
+                            throw new Error();
+                        }
+                        return response.json()
+                    }).then((json) => {
+                        document.getElementById('loader').style.display = 'none';
+                        if (json.totalHits > 0) {
+                            keys = { keyword: input.value, pages: Math.ceil(json.totalHits / 200) };
+                            SetWallpaper(true);
+                            save();
+                            dialog.off();
+                        } else {
+                            resultDiv.innerHTML = 'No results';
+                            input.value = '';
+                            setTimeout(() => { resultDiv.innerHTML = '' }, 2000);
+                        }
+                    })
+                } else {
+                    dialog.off();
+                }
+            });
+            input.focus();
+
+        }
+
+        function changeRss() {
+            document.getElementById('menu-btn-check').checked = false;
+            const dialog = new Dialog('dialog', 350, 150, 'RSSアドレス');
+            const div = document.createElement('div');
+            const textArea = document.createElement('textarea');
+            textArea.value = rss;
+            setStyles(textArea, { width: '250px', height: '50px' })
+            div.appendChild(textArea);
+            const resultDiv = document.createElement('div');
+            setStyles(resultDiv, { height: '20px', textAlign: 'center' })
+            div.appendChild(resultDiv);
+            dialog.on(div, ['OK'], ['Cancel'], text => {
+                if (text == 'OK') {
+                    document.getElementById('loader').style.display = 'flex';
+                    fetch(`https://kittywatch.netlify.app/.netlify/functions/app?cors=${encodeURI(textArea.value)}`).then(response => {
+                        if (!response.ok) {
+                            throw new Error();
+                        }
+                        return response.text()
+                    }).then((xml) => {
+                        document.getElementById('loader').style.display = 'none';
+                        const parser = new DOMParser();
+                        const doc = parser.parseFromString(xml, "text/xml");
+                        if (doc.documentElement.getElementsByTagName("item").length > 0) {
+                            rss = encodeURI(textArea.value)
+                            SetNews(true);
+                            save();
+                            dialog.off();
+                        } else {
+                            document.getElementById('loader').style.display = 'none';
+                            resultDiv.innerHTML = 'No RSS';
+                            textArea.value = '';
+                            setTimeout(() => { resultDiv.innerHTML = '' }, 2000);
+                        }
+                    }).catch(err => {
+                        console.log(err)
+                        document.getElementById('loader').style.display = 'none';
+                        resultDiv.innerHTML = 'No RSS';
+                        textArea.value = '';
+                        setTimeout(() => { resultDiv.innerHTML = '' }, 2000);
+                    })
+                } else {
+                    dialog.off();
+                }
+            });
+            textArea.focus();
+
+        }
+
+        function initialSetting() {
+            document.getElementById('menu-btn-check').checked = false;
+            const dialog = new Dialog('dialog', 250, 100, '設定初期化');
+            dialog.on('設定を初期化しますか？', ['OK'], ['Cancel'], text => {
+                dialog.off();
+                if (text == 'OK') {
+                    prefecture = 210000;
+                    region = 0;
+                    rss = 'https://www.nhk.or.jp/rss/news/cat0.xml';
+                    keys = { keyword: 'kitty', pages: 2 };
+                    save();
+                    location.reload();
+                }
+            })
+
+        }
+
+        function setStyles(element, styles) {
+            Object.keys(styles).forEach(style => { element.style[style] = styles[style] })
+        }
+
+
+        class Dialog {
+            constructor(id, width, height, title) {
+                this.id = id;
+                this.div = document.createElement('div');
+                this.setStyles(this.div, { zIndex: "150", position: "fixed", top: "0", width: "100%", height: "100%", display: "flex", justifyContent: "center", alignItems: "center" })
+                this.fader = document.createElement('div');
+                this.setStyles(this.fader, { position: "fixed", top: "0", left: '0', width: "100%", height: "100%", backgroundColor: "rgba(0, 0, 0, 0.2)" })
+                this.dialogWindow = document.createElement('div');
+                this.setStyles(this.dialogWindow, { position: "relative", width: width + "px", maxWidth: "90%", height: height + "px", maxHeight: "90%", display: "flex", background: "white" });
+                this.titleWindow = document.createElement('div');
+                this.setStyles(this.titleWindow, { position: "absolute", top: "0", height: "30px", textAlign: "center", fontWeight: "bold", width: "100%" });
+                this.titleWindow.innerHTML = title || '';
+                this.dialogWindow.appendChild(this.titleWindow);
+                this.innerWindow = document.createElement('div');
+                this.setStyles(this.innerWindow, { position: "absolute", top: (title != undefined ? 30 : 0) + "px", height: height - 40 - (title != undefined ? 30 : 0) + "px", maxHeight: "80%", width: "100%", display: "flex", flexWrap: "wrap", justifyContent: "center", alignItems: "center", overflowY: "auto" })
+                this.dialogWindow.appendChild(this.innerWindow);
+                this.dialogWindow.style.display = 'flex';
+                this.div.appendChild(this.fader);
+                this.div.appendChild(this.dialogWindow);
+                this.fader.onclick = () => { this.off() }
+            }
+
+            setStyles(element, styles) {
+                Object.keys(styles).forEach(styleName => {
+                    element.style[styleName] = styles[styleName];
+                })
+            }
+
+            on(element, rightButtons, leftButtons, callback) {
+                document.activeElement.blur();
+                document.getElementById(this.id).style.display = 'flex';
+                document.onkeydown = e => {
+                    if (e.key == 'Enter') {
+                        let allDiv0 = document.getElementById(this.id).childNodes;
+                        let allDiv1 = allDiv0[allDiv0.length - 1].childNodes;
+                        let allDiv2 = allDiv1[allDiv1.length - 1].childNodes;
+                        allDiv2[2].click();
+                    }
+                }
+
+                if (typeof element == 'string') {
+                    let text = element;
+                    element = document.createElement('div');
+                    element.innerHTML = text;
+                }
+                this.innerWindow.appendChild(element);
+                document.getElementById(this.id).appendChild(this.div);
+                let enterKey;
+                let createButton = (buttons, side) => {
+                    let position = 10;
+                    buttons.forEach((buttonText, i) => {
+                        let buttonDiv = document.createElement('button');
+                        buttonDiv.innerHTML = buttonText;
+                        buttonDiv.onclick = () => {
+                            callback(buttonText);
+                        }
+                        this.dialogWindow.appendChild(buttonDiv);
+                        buttonDiv.style.position = 'absolute';
+                        buttonDiv.style.bottom = '10px';
+                        buttonDiv.style[side] = position + 'px';
+                        position += buttonDiv.clientWidth + 10;
+                    })
+                }
+                createButton(rightButtons, 'right');
+                createButton(leftButtons || [], 'left')
+            }
+
+            off() {
+                if (document.getElementById(this.id).childNodes.length == 1) {
+                    document.onkeydown = null;
+                }
+                this.div.remove();
+            }
+        }
+
+
+
+    </script>
+</body>
+
+</html>
