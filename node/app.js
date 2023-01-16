@@ -8,7 +8,7 @@ exports.handler = async (event, context) => {
 		if (pathname == "holidays") {
 			const res = await get('https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv').catch(error => {
 				return {
-					statusCode: 422,
+					statusCode: 404,
 					body: `Error: ${error}`,
 				}
 			})
@@ -26,7 +26,7 @@ exports.handler = async (event, context) => {
 			const res = await get(pathname).catch(error => {
 				console.log(error)
 				return {
-					statusCode: 422,
+					statusCode: 404,
 					body: `Error: ${error}`,
 				}
 			});
