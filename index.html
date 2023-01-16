@@ -723,6 +723,7 @@
             const dialog = new Dialog('dialog', 350, 120, '壁紙キーワード');
             const div = document.createElement('div');
             const input = document.createElement('input');
+            input.value = keys.keyword;
             div.appendChild(input);
             const resultDiv = document.createElement('div');
             setStyles(resultDiv, { height: '20px' })
