@@ -4,6 +4,7 @@ const iconv = require("iconv-lite");
 exports.handler = async (event, context) => {
 	return await (() => {
 		const pathname = event.queryStringParameters.cors;
+		console.log(pathname)
 		if (event.httpMethod == 'GET') {
 			if (pathname == "holidays") {
 				get('https://www8.cao.go.jp/chosei/shukujitsu/syukujitsu.csv').then(res => {
