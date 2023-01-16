@@ -1,8 +1,8 @@
 const https = require('https');
 const iconv = require("iconv-lite");
 
-exports.handler = async (event, context) => {
-	return await (() => {
+exports.handler = (event, context) => {
+	(async () => {
 		const pathname = event.queryStringParameters.cors;
 		console.log(pathname)
 		if (event.httpMethod == 'GET') {
