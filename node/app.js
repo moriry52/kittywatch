@@ -16,7 +16,7 @@ exports.handler = async (event, context) => {
 			let holidays = iconv.decode(res.contents, "Shift_JIS").split('\r\n').slice(1).map(value => value.split(',')).filter(value => new Date(value[0]).getTime() >= today);
 			return {
 				statusCode: 200,
-				headers: { 'Content-Type': 'application/json' },
+				headers: { 'Access-Control-Allow-Origin': '*', 'Content-Type': 'application/json' },
 				body: JSON.stringify(holidays)
 			}
 
@@ -29,7 +29,7 @@ exports.handler = async (event, context) => {
 			});
 			return {
 				statusCode: 200,
-				headers: res.headers,
+				headers: {'Access-Control-Allow-Origin': '*', ...res.headers},
 				body: res.contents.toString()
 			}
 
