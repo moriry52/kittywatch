@@ -3,10 +3,6 @@ const iconv = require("iconv-lite");
 
 exports.handler = async (event, context) => {
 	const pathname = event.queryStringParameters.cors;
-	return {
-		statusCode: 200,
-		body: pathname,
-	}
 	console.log(pathname)
 	if (event.httpMethod == 'GET') {
 		if (pathname == "holidays") {
