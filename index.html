@@ -597,7 +597,7 @@
 
 
                     const rainTimeDefines = weather[0].timeSeries[1].timeDefines;
-                    const rainPops = weather[0].timeSeries[1].areas[region].pops.filter((value, i) => new Date(rainTimeDefines[i]).getTime() >= todayTime);
+                    let rainPops = weather[0].timeSeries[1].areas[region].pops.filter((value, i) => new Date(rainTimeDefines[i]).getTime() >= todayTime);
                     let pops = [];
                     if (rainPops.length > 4) {
                         rainPops = ["-", "-", "-", "-"].concat(rainPops).slice(-8);
