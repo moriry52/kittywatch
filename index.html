@@ -369,7 +369,7 @@
             #weekly_weather>div>div>div:nth-child(3) {
                 height: 50px;
                 display: table;
-                width:100%;
+                width: 100%;
                 text-align: center;
             }
 
@@ -489,7 +489,7 @@
             } else if (day == 6) {
                 color = 'blue';
             }
-            return [`<span style='color:${color}'>${y}/</span>`, `<span style='color:${color}'>${m}/${d}</span>`,`<span style='color:${color}'>${days[day]}</span>`,`<span color='${color}'>${holidayName}</span>`];
+            return [`<span style='color:${color}'>${y}/</span>`, `<span style='color:${color}'>${m}/${d}</span>`, `<span style='color:${color}'>${days[day]}</span>`, `<span color='${color}'>${holidayName}</span>`];
         }
 
         function changeRegion() {
@@ -588,27 +588,36 @@
                     }
                     return response.json()
                 }).then((weather) => {
-                    const todayTime = Math.floor(new Date().getTime() / (24 * 60 * 60 * 1000))*(24 * 60 * 60 * 1000);
+                    const now = new Date();
+                    const todayTime = new Date(`${now.getFullYear()}/${now.getMonth() + 1}/${now.getDate()}`).getTime();
                     let timeDefines = weather[0].timeSeries[0].timeDefines;
-                    let weatherCodes = weather[0].timeSeries[0].areas[region].weatherCodes.filter((value,i) => new Date(timeDefines[i]) >= todayTime);
-                    let weatherComments = weather[0].timeSeries[0].areas[region].weathers.filter((value,i) => new Date(timeDefines[i]) >= todayTime);
+                    const weatherCodes = weather[0].timeSeries[0].areas[region].weatherCodes.filter((value, i) => new Date(timeDefines[i]).getTime() >= todayTime);
+                    const weatherComments = weather[0].timeSeries[0].areas[region].weathers.filter((value, i) => new Date(timeDefines[i]).getTime() >= todayTime);
                     timeDefines = timeDefines.filter(value => new Date(value).getTime() >= todayTime);
- 
-                    let rainTimeDefines = weather[0].timeSeries[1].timeDefines;
-                    let rainPops = weather[0].timeSeries[1].areas[region].pops.filter((value,i) => new Date(rainTimeDefines[i]) >= todayTime);
-                    rainPops = ["-", "-", "-", "-"].concat(weather[0].timeSeries[1].areas[region].pops).slice(-8);
-                    const pops = [`<br>降水確率 ${rainPops.slice(0, 4).join('/')}`, `<br>降水確率 ${rainPops.slice(4, 8).join('/')}`, ''];
+
+
+                    const rainTimeDefines = weather[0].timeSeries[1].timeDefines;
+                    const rainPops = weather[0].timeSeries[1].areas[region].pops.filter((value, i) => new Date(rainTimeDefines[i]).getTime() >= todayTime);
+                    let pops = [];
+                    if (rainPops.length > 4) {
+                        rainPops = ["-", "-", "-", "-"].concat(rainPops).slice(-8);
+                        pops = [`<br>降水確率 ${rainPops.slice(0, 4).join('/')}`, `<br>降水確率 ${rainPops.slice(4, 8).join('/')}`, ''];
+                    } else {
+                        pops = [`<br>降水確率 ${rainPops.slice(0, 4).join('/')}`, '', ''];
+                    }
 
                     let tempTimeDefines = weather[0].timeSeries[2].timeDefines;
-                    const temps = weather[0].timeSeries[2].areas[region].temps.filter((value,i) => new Date(tempTimeDefines[i]) >= todayTime);
-                    const tempTimes = tempTimeDefines.filter(value => new Date(value).getTime() >= todayTime).map(value => new Date(value).getHours());
+                    let temps = weather[0].timeSeries[2].areas[region].temps;
+                    const tempTimes = tempTimeDefines.map(value => new Date(value).getHours());
 
                     let tempComments = [];
                     if (temps.length == 4 & tempTimes[0] < tempTimes[1]) {
                         tempComments = [`&nbsp;${temps[0]}℃&nbsp;/&nbsp;${temps[1]}℃&nbsp;`, `&nbsp;${temps[2]}℃&nbsp;/&nbsp;${temps[3]}℃&nbsp;`, ""];
                     } else if (temps.length == 4 & tempTimes[0] > tempTimes[1]) {
                         tempComments = [`&nbsp;-&nbsp;/&nbsp;${temps[1]}℃&nbsp;`, `&nbsp;${temps[2]}℃&nbsp;/&nbsp;${temps[3]}℃&nbsp;`, ""];
-                    } else {
+                    } else if (temps.length == 2 && new Date().getHours() < 5) {
+                        tempComments = [`&nbsp;${temps[0]}℃&nbsp;/&nbsp;${temps[1]}℃&nbsp;`,"", ""];
+                    } else{
                         tempComments = [`&nbsp;-&nbsp;/&nbsp;-&nbsp;`, `&nbsp;${temps[temps.length - 2]}℃&nbsp;/&nbsp;${temps[temps.length - 1]}℃&nbsp;`, ""];
                     }
 
@@ -639,7 +648,7 @@
                         const div = document.createElement('div');
                         const date = new Date(weeklytimeDefines[i]);
                         const dateDiv = document.createElement('div');
-                        dateDiv.innerHTML = getDateString(date).slice(1,3).join('<br>');
+                        dateDiv.innerHTML = getDateString(date).slice(1, 3).join('<br>');
                         div.appendChild(dateDiv);
                         const img = document.createElement('img');
                         img.src = `https://www.jma.go.jp/bosai/forecast/img/${weatherCodeTable[weeklyWeatherCodes[i]][0]}`;
