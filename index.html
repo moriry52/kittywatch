@@ -638,9 +638,9 @@
 
                     const weeklyWeatherCodes = weather[1].timeSeries[0].areas[region].weatherCodes;
                     const weeklytimeDefines = weather[1].timeSeries[0].timeDefines;
-                    const weeklyTempsMax = weather[1].timeSeries[1].areas[region].tempsMax;
-                    const weeklyTempsMin = weather[1].timeSeries[1].areas[region].tempsMin;
-                    const weeklyRainPops = ["", "", "", ""].concat(weather[1].timeSeries[0].areas[region].pops).slice(-weeklytimeDefines.length);
+                    const weeklyTempsMax = weather[1].timeSeries[1].areas[region].tempsMax.map(temp => temp == "" ? "" : `${temp}℃`);
+                    const weeklyTempsMin = weather[1].timeSeries[1].areas[region].tempsMin.map(temp => temp == "" ? "" : `${temp}℃/`);
+                    const weeklyRainPops = ["", "", "", ""].concat(weather[1].timeSeries[0].areas[region].pops.map(pop => pop == "" ? "" : `${pop}%`)).slice(-weeklytimeDefines.length);
 
                     document.getElementById('weekly_weather').innerHTML = '';
                     const wrap = document.createElement('div');
@@ -658,10 +658,7 @@
                         commentDiv.innerHTML = `<div>${weatherCodeTable[weeklyWeatherCodes[i]][3]}</div>`;
                         div.appendChild(commentDiv);
                         const tempDiv = document.createElement('div');
-                        let popTemp = `${weeklyRainPops[i]}%<br>${weeklyTempsMin[i]}℃/${weeklyTempsMax[i]}℃`;
-                        if (timeDefines.map(time => new Date(time).getDate()).indexOf(new Date(weeklytimeDefines[i]).getDate()) > -1) {
-                            popTemp = '';
-                        }
+                        let popTemp = `${weeklyRainPops[i]}<br>${weeklyTempsMin[i]}${weeklyTempsMax[i]}`;
                         tempDiv.innerHTML = popTemp;
                         setStyles(tempDiv, { fontSize: '10px' })
                         div.appendChild(tempDiv);
